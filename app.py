@@ -2,6 +2,7 @@
 
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.pool import NullPool
 from dotenv import load_dotenv
 import os
 
@@ -17,8 +18,14 @@ DBNAME = os.getenv("dbname")
 app = Flask(__name__)
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:recisbogor123@localhost:5000/recup'
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
+DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require"
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "poolclass": NullPool,      # Supabase kadang putus, NullPool aman
+    "pool_pre_ping": True        # ping sebelum pakai koneksi
+}
+
 
 db = SQLAlchemy(app)
 
