@@ -271,6 +271,15 @@ def register():
         total_fee = data.get("total_fee")
         total_members = data.get("total_members")
         
+        # ⚡ VALIDASI: Pastikan total_fee ada
+        if not total_fee:
+            return jsonify({"error": "Total fee is required"}), 400
+        
+        try:
+            fee = int(total_fee)  # ⚡ PASTI PAKAI total_fee dari frontend
+        except ValueError:
+            return jsonify({"error": "Invalid total fee format"}), 400
+        
         # ⚡ Parse team members data (JSON string)
         team_members_data = json.loads(data.get("team_members", "[]"))
         officials_data = json.loads(data.get("officials", "[]"))
@@ -358,12 +367,14 @@ def register():
 
         # ⚡ Create Midtrans transaction
         competition = Competition.query.get(competition_id)
-        fee = int(total_fee) if total_fee else competition.fee
+        
+        # ⚡ DEBUG logging
+        print(f"FEE DEBUG: Frontend total_fee={total_fee}, DB competition.fee={competition.fee}, Final fee={fee}")
 
         transaction_params = {
             "transaction_details": {
                 "order_id": order_id,
-                "gross_amount": fee,
+                "gross_amount": fee,  # ⚡ Ini sekarang PASTI pakai calculated fee dari frontend
             },
             "customer_details": {
                 "first_name": name,
