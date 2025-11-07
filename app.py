@@ -22,7 +22,7 @@ cloudinary.config(
 )
 
 snap = midtransclient.Snap(
-    is_production=False,
+    is_production=True,
     server_key=os.getenv("MIDTRANS_SERVER_KEY"),
     client_key=os.getenv("MIDTRANS_CLIENT_KEY")
 )
